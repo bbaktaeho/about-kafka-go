@@ -110,6 +110,7 @@ func runOffsetManagerSub(groupId string, topic string, partition int32) {
 	go func() {
 		defer consumer.Close()
 		defer offsetManager.Close()
+		defer offsetManager.Commit()
 		for {
 			select {
 			case msg := <-consumePartition.Messages():
@@ -118,9 +119,6 @@ func runOffsetManagerSub(groupId string, topic string, partition int32) {
 				offset := msg.Offset
 				value := string(msg.Value)
 				log.Printf("[runOffsetManagerSub] topic: %v, partition: %d, offset: %d, value: %v\n", topic, partition, offset, value)
-
-				// autu commit이 비활성화라면 수동 실행
-				// offsetManager.Commit()
 			case err := <-consumePartition.Errors():
 				log.Println("[runOffsetManagerSub] error", err)
 			}
