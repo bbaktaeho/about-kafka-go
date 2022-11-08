@@ -27,7 +27,6 @@ func RetryConnect(brokers []string, retryInterval time.Duration) chan sarama.Cli
 			config := sarama.NewConfig()
 			config.Producer.Return.Successes = true
 			config.Producer.Return.Errors = true
-
 			conn, err := sarama.NewClient(brokers, config)
 			if err == nil {
 				result <- conn

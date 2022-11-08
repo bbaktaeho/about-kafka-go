@@ -9,29 +9,29 @@ import (
 	"github.com/bbaktaeho/about-kafka-go/topics"
 )
 
-// NewKafkaProducer 함수는 sarama의 동기 프로듀서를 생성합니다.
-func NewKafkaProducer(url string) sarama.SyncProducer {
+// NewSyncProducer 함수는 sarama의 동기 프로듀서를 생성합니다.
+func NewSyncProducer(url string) sarama.SyncProducer {
 	brokers := GetBrokers(url)
 	client := <-RetryConnect(brokers, 5*time.Second) // 연결에 성공할 때 까지 반복
 	createTopics(brokers, client.Config())
 
 	producer, err := sarama.NewSyncProducerFromClient(client)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("[NewSyncProducer]", err)
 	}
 
 	return producer
 }
 
-// NewKafkaAsyncProducer 함수는 sarama의 비동기 프로듀서를 생성합니다.
-func NewKafkaAsyncProducer(url string) sarama.AsyncProducer {
+// NewAsyncProducer 함수는 sarama의 비동기 프로듀서를 생성합니다.
+func NewAsyncProducer(url string) sarama.AsyncProducer {
 	brokers := GetBrokers(url)
 	client := <-RetryConnect(brokers, 5*time.Second) // 연결에 성공할 때 까지 반복
 	createTopics(brokers, client.Config())
 
 	producer, err := sarama.NewAsyncProducerFromClient(client)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("[NewAsyncProducer]", err)
 	}
 
 	return producer
@@ -41,7 +41,7 @@ func NewKafkaAsyncProducer(url string) sarama.AsyncProducer {
 func createTopics(brokers []string, config *sarama.Config) {
 	admin, err := sarama.NewClusterAdmin(brokers, config)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("[createTopics]", err)
 	}
 	defer admin.Close()
 
@@ -60,7 +60,7 @@ func createTopics(brokers []string, config *sarama.Config) {
 		}, false)
 		if err != nil {
 			if !errors.Is(err, sarama.ErrTopicAlreadyExists) {
-				log.Fatal(err)
+				log.Fatal("[createTopics]", err)
 			}
 		}
 	}
